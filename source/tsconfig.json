@@ -1,0 +1,10 @@
+   
+{
+    "compilerOptions": {
+        "strict": false,
+        "target": "es2019",
+        "removeComments": true,
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true
+    }
+}

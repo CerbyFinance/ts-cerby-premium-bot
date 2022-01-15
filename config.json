@@ -1,0 +1,15 @@
+{
+    "botToken": "5011152632:AAEJaG9O0jHwUWCllyRKcdbfe9Yc79QctHw",
+    "superUsers": [ 801748388 ],
+    "availableChats": [ -1001674542369 ],
+    "dbPort": 5432,
+    "dbHost": "172.20.10.4",
+    "dbName": "premium",
+    "dbAuth": {
+        "username": "postgres",
+        "password": ""
+    },
+    "authUrl": "https://premium.schegloff.com/auth/",
+    "listenPort": 4000,
+    "wssAuthPort": 4001
+}

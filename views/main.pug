@@ -1,0 +1,16 @@
+doctype html
+html(lang="en")
+    head
+        include includes/head.pug
+        title Create session
+    body 
+        include includes/cerby.pug
+        .container
+            .info
+                .top-head
+                    h2 Create session
+                .text
+                    p
+                        | Hello user, to link your wallet you need to create a session in the bot: 
+                        a.bot(href="https://t.me/CerbyTokenBot") @CerbyTokenBot
+        include includes/scripts.pug

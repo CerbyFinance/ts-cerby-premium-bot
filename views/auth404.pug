@@ -1,0 +1,17 @@
+doctype html
+html(lang="en")
+    head
+        include includes/head.pug
+        title Session not found
+    body
+        include includes/cerby.pug
+        .container
+            .info
+                .top-head
+                    h2 Session not found
+                .text
+                    p Hi user this session not found.
+                    p
+                        | You can create a new session in the bot: 
+                        a.bot(href="https://t.me/CerbyTokenBot") @CerbyTokenBot
+        include includes/scripts.pug

@@ -1,0 +1,18 @@
+doctype html
+html(lang="en")
+    head
+        include includes/head.pug
+        title Wallet binding
+    body
+        include includes/cerby.pug
+        .container
+            .wallet-connect
+                .top-head
+                    h2 Wallet binding
+                .text
+                    p Hi #{first_name}#{last_name ? ' ' + last_name : ''}, you are linking your wallet to your telegram account. Click the «Connect wallet» button to continue
+                    button#wallet-connect-metamask(disabled) Checking metamask...
+                .attention
+                    p Attention. If someone sent you a link to this page, then do not link your wallet.
+            .qr
+        include includes/scripts.pug

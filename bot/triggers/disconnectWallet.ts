@@ -40,13 +40,13 @@ export async function disconnectCallback(query) {
     if(query.data == "disconnectYES") {
         if(user.address) {
             await disconnectWallet(query.from.id);
-            bot.editMessageText("Your wallet is untied.", { chat_id: query.message.chat.id, message_id: query.message.message_id });
+            bot.editMessageText("Your wallet is disconnected.", { chat_id: query.message.chat.id, message_id: query.message.message_id });
         } else {
             bot.editMessageText(noWalletMessage, { chat_id: query.message.chat.id, message_id: query.message.message_id });
         }
     } else {
         if(user.address) {
-            bot.editMessageText("Your wallet remains linked.", { chat_id: query.message.chat.id, message_id: query.message.message_id });
+            bot.editMessageText("Your wallet remains connected.", { chat_id: query.message.chat.id, message_id: query.message.message_id });
         } else {
             bot.editMessageText(noWalletMessage, { chat_id: query.message.chat.id, message_id: query.message.message_id });
         }

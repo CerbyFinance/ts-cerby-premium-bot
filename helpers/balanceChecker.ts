@@ -33,7 +33,7 @@ export async function startBalanceChecker() {
                 user.joinedGroups.splice(chatIndex, 1);
                 user.changed("joinedGroups", true);
                 await user.save();
-                await kickChatMember(chat, user.id, `❌ ${user.first_name}${user.last_name ? ' ' + user.last_name : ''} was kicked due to having not enough CERBY's!`);
+                await kickChatMember(chat, user.id, `❌ [${user.first_name}${user.last_name ? ' ' + user.last_name : ''}](tg://user?id=${user.id}) was kicked due to having not enough CERBY's!`);
                 await bot.sendMessage(user.id, `❌ You have been excluded from the ${allGroups[chat].title} chat.\n` +
                                               `*Cause:* ${verdict.comment}`, { parse_mode: "markdown" });
             }

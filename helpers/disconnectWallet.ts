@@ -13,7 +13,7 @@ export async function disconnectWallet(id, message?: string) {
     user.balanceUpdatedAt = null;
     if(user.joinedGroups) {
         user.joinedGroups.forEach((chat) => {
-            kickChatMember(chat, user.id, `❌ ${user.first_name}${user.last_name ? ' ' + user.last_name : ''} was kicked out due to disconnected wallet.`)
+            kickChatMember(chat, user.id, `❌ [${user.first_name}${user.last_name ? ' ' + user.last_name : ''}](tg://user?id=${id}) was kicked out due to disconnected wallet.`)
         })
         user.joinedGroups = [];
     }

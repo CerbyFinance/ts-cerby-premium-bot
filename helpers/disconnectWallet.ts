@@ -13,7 +13,7 @@ export async function disconnectWallet(id, message?: string) {
     user.balanceUpdatedAt = null;
     if(user.joinedGroups) {
         user.joinedGroups.forEach((chat) => {
-            kickChatMember(chat, user.id, `❌ ${user.first_name}${user.last_name ? ' ' + user.last_name : ''} was kicked out due to untied wallet.`)
+            kickChatMember(chat, user.id, `❌ ${user.first_name}${user.last_name ? ' ' + user.last_name : ''} was kicked out due to disconnected wallet.`)
         })
         user.joinedGroups = [];
     }
@@ -22,5 +22,5 @@ export async function disconnectWallet(id, message?: string) {
     if(message) {
         await bot.sendMessage(id, message, { parse_mode: "markdown", reply_markup: getKeyboard(false) });
     }
-    bot.sendMessage(id, `You can link the wallet back using the *Connect wallet* button`, { parse_mode: "markdown", reply_markup: getKeyboard(false) });
+    bot.sendMessage(id, `You can connect the wallet back using the *Connect wallet* button`, { parse_mode: "markdown", reply_markup: getKeyboard(false) });
 }

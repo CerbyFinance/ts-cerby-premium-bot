@@ -14,7 +14,7 @@ export async function linkWallet(id, address, signature, signMessage) {
     const usersByWallet = await getUsersByWallet(address);
     usersByWallet.map(async (userByWallet) => {
         if(userByWallet.id != user.id) {
-            await disconnectWallet(userByWallet.id, "Your wallet has been linked by another user.");
+            await disconnectWallet(userByWallet.id, "Your wallet has been connected by another user.");
         }
     });
 }

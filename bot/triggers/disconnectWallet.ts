@@ -12,7 +12,7 @@ export async function disconnectWalletTrigger(msg: userMessage) {
     const user = await createUser(msg);
 
     if(user.address) {
-        let text = `*Are you sure you want to unlink your wallet?* (You will be excluded from all premium groups)`;
+        let text = `*Are you sure you want to disconnect your wallet?* (You will be excluded from all premium groups)`;
         bot.sendMessage(user.id, text, {
             parse_mode: "markdown",
             reply_markup: {

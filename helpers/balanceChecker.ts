@@ -5,7 +5,7 @@ import { chatValidator } from "../bot/helpers/groupValidator/main";
 import { kickChatMember } from "./kickuser";
 import { bot } from "../bot/main";
 
-const maxTime = 2 * 60 * 1e3; // 15 minutes
+const maxTime = 15 * 60 * 1e3; // 15 minutes
 const maxAwait = 20 * 60; // 20 seconds
 
 

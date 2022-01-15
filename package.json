@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm run scripts | npm run sass",
-    "tsc" : "tsc",
+    "tsc": "tsc",
     "sass": "sass --no-source-map --style=compressed ./source/sass/main.sass ./dist/bundle.css",
     "scripts": "webpack --mode production",
     "dev": "webpack --watch | sass --watch --style=expanded ./source/sass/main.sass ./dist/bundle.css"

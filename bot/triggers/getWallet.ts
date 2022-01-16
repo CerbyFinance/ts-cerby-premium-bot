@@ -3,7 +3,7 @@ import { bot } from "../main";
 import { numWithCommas } from "../helpers/numWithCommas";
 import { updateBalance } from "../../helpers/updateBalance";
 import { getKeyboard } from "./getKeyboard";
-
+import { checkAccessToGroup } from "./checkGroup";
 import { noWalletMessage } from "./disconnectWallet";
 
 export async function getWallet(id: number, newWallet?: boolean) {
@@ -20,9 +20,18 @@ export async function getWallet(id: number, newWallet?: boolean) {
     const text = `*Your wallet:* \`${user.address}\`\n` +
                  `*Balance:* ${numWithCommas(user.cerby || 0)} CERBY (${numWithCommas(user.usd || 0)} USD)`
     if(message) {
-        console.log(message);
         bot.editMessageText(text, { chat_id: message.chat.id, message_id: message.message_id, parse_mode: "markdown" });
     } else {
         bot.sendMessage(user.id, text, { parse_mode: "markdown", reply_markup: getKeyboard(true) });
+    }
+    if(newWallet) {
+        checkAccessToGroup({
+            chat: {
+                type: 'private'
+            },
+            from: {
+                id
+            }
+        })
     }
 }

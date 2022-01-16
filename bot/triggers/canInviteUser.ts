@@ -14,6 +14,7 @@ export async function canInviteUser(ctx) {
         const verdict = chatValidator(chat, user);
         if(verdict.allowed) {
             bot.approveChatJoinRequest(chat.id, user.id);
+            bot.sendMessage(chat.id, `👋 [${user.first_name}${user.last_name ? ' ' + user.last_name : ''}](tg://user?id=${user.id}), Welcome to ${chat.title}! You can claim your free merch here: https://cerbymerch.com`, { parse_mode: "markdown" })
             if(!(user.joinedGroups instanceof Array)) {
                 user.joinedGroups = [];
             }

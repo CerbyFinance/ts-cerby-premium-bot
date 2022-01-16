@@ -9,7 +9,7 @@ export class wss {
     constructor() {
         this.connected = false;
         this.closed = false;
-        this.ws = new WebSocket(`wss://${window.location.hostname}/api`);
+        this.ws = new WebSocket(`wss://${window.location.hostname}/socket`);
         this.ws.onopen = () => {
             this.ws.onmessage = this.successfulMsg;
         }

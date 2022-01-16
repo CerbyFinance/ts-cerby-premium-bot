@@ -10,7 +10,7 @@ export async function canInviteUser(ctx) {
         return;
     }
     const user = await getUser(ctx.from.id);
-    if(user) {
+    if(user && user.address) {
         const verdict = chatValidator(chat, user);
         if(verdict.allowed) {
             bot.approveChatJoinRequest(chat.id, user.id);
@@ -24,7 +24,7 @@ export async function canInviteUser(ctx) {
             user.changed('joinedGroups', true);
             return await user.save()
         } else {
-            bot.sendMessage(user.id, `You have applied to join the "${chat.title}". Your join request has been rejected because you do not qualify.\n*Cause:* ${verdict.comment}`, { reply_markup: getKeyboard(true) })
+            bot.sendMessage(user.id, `You have applied to join the "${chat.title}". Your join request has been rejected because you do not qualify.\n*Cause:* ${verdict.comment}`, { reply_markup: getKeyboard(true), parse_mode: "markdown" })
         }
     } else {
         bot.sendMessage(ctx.from.id, `You have applied to join the "${chat.title}". To do this, you need to authorize your wallet.`, { reply_markup: getKeyboard(false) })

@@ -12,7 +12,7 @@ import { canInviteUser } from './triggers/canInviteUser';
 export const bot = new TelegramBot(botToken, { polling: true });
 
 export async function startBotPolling() {
-    bot.onText(/^\/start$/, start);
+    bot.onText(/^\/start$/, connectWallet);
     bot.onText(/^Connect wallet$/, connectWallet);
 
     bot.onText(/^Get wallet$/, (msg) => {

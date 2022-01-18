@@ -5,8 +5,8 @@ import { chatValidator } from "../bot/helpers/groupValidator/main";
 import { kickChatMember } from "./kickuser";
 import { bot } from "../bot/main";
 
-const maxTime = 15 * 60 * 1e3; // 15 minutes
-const maxAwait = 20 * 60; // 20 seconds
+const maxTime = 5 * 60 * 1e3; // 5 minutes
+const maxAwait = 10 * 60; // 20 seconds
 
 
 export async function startBalanceChecker() {
@@ -21,7 +21,11 @@ export async function startBalanceChecker() {
     for(let i = 0; i < users.length; i++) {
         let user = users[i];
         const startUpdateTime = Date.now()
-        await updateBalance(user.id, false, true);
+        let message = await updateBalance(user.id, false, true);
+        if(message == -1) {
+            console.error("Balance checker instance is stopped")
+            break;
+        }
         let updateTime = Date.now() - startUpdateTime;
         console.log(`User(${user.id} ${user.first_name}${user.last_name ? ' ' + user.last_name : ''}) balance updated with ${updateTime / 1e3} seconds`);
         await user.reload();

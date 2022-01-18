@@ -1,4 +1,6 @@
 import { request } from "./request";
+import { AbiItem } from 'web3-utils';
+const Web3 = require('web3');
 
 const stakingUrls = {
     Eth: "https://graph.cerby.fi/subgraphs/name/cerby/staking-ethereum",
@@ -8,12 +10,22 @@ const stakingUrls = {
     Polygon: "https://graph.cerby.fi/subgraphs/name/deft/staking-polygon"
 }
 
-const scanApi = {
-    Fantom: { url: "https://api.ftmscan.com/api", apiKey: "9GDIQ5D76VTARPNN2E4P7QIKGX5X869YNZ" },
-    Avalanche: { url: "https://api.snowtrace.io/api", apiKey: "UGET8JS8SIM16DEM4MJVTCQD5KFZWG4GXQ" },
-    Eth: { url: "https://api.etherscan.io/api", apiKey: "1VWGQK47AT68RDXFYU3Q3B1FM2H8QP5B1Q" },
-    Bsc: { url: "https://api.bscscan.com/api", apiKey: "2TKHPD8XK7PNXN43J7BJMDHCPZ54D5P7SJ" },
-    Polygon: { url: "https://api.polygonscan.com/api", apiKey: "61MFU8G6RPMDJRZSYHR3EGKYQG2YINVTPY" }
+const minABI = [{
+      constant: true,
+      inputs: [{ name: "_owner", type: "address" }],
+      name: "balanceOf",
+      outputs: [{ name: "balance", type: "uint256" }],
+      type: "function",
+    },] as AbiItem[]
+
+const tokenAddress = "0xdef1fac7bf08f173d286bbbdcbeeade695129840";
+
+const Rpcs = {
+    Fantom:    new (new Web3("https://secret:X4gDeGtfQy2M@fantom-node.cerby.fi")).eth.Contract(minABI, tokenAddress),
+    Avalanche: new (new Web3("https://secret:X4gDeGtfQy2M@avalanche-node.cerby.fi")).eth.Contract(minABI, tokenAddress),
+    Eth:       new (new Web3("https://secret:X4gDeGtfQy2M@eth-node.cerby.fi")).eth.Contract(minABI, tokenAddress),
+    Bsc:       new (new Web3("https://secret:X4gDeGtfQy2M@bsc-node.cerby.fi")).eth.Contract(minABI, tokenAddress),
+    Polygon:   new (new Web3("https://secret:X4gDeGtfQy2M@polygon-node.cerby.fi")).eth.Contract(minABI, tokenAddress)
 }
 
 
@@ -34,22 +46,21 @@ export async function getAmount(address: string) {
             }
         }
     });
-    let liquidPromises = Object.keys(scanApi).map(async (scan) => {
-        let tempReceived = await request("GET", scanApi[scan].url, { params:
-            { module: "account",
-              action: "tokenbalance",
-              contractaddress: "0xdef1fac7bf08f173d286bbbdcbeeade695129840",
-              address,
-              tag: "latest",
-              apikey: scanApi[scan].apiKey
+    let liquidPromises = Object.keys(Rpcs).map(async (rpc) => {
+        for(let attempt; attempt <= 5; attempt++) {
+            try {
+                const balance: number = await Rpcs[rpc].methods.balanceOf(address).call();
+
+                liquid[rpc] = {
+                    liquid: balance / 1e18,
+                    liquidInUsd: balance / 1e18 * +prices[`priceOn${rpc}`]
+                }
+                break;
+            } catch(err) {
+                if(attempt == 5) {
+                    throw `There have already been more than 5 attempts to get a balance, which ended in an error. Chain: ${rpc}`
+                }
             }
-        });
-        if(tempReceived.message != "OK") {
-            console.error(tempReceived);
-        }
-        liquid[scan] = {
-            liquid: tempReceived.result / 1e18,
-            liquidInUsd: tempReceived.result / 1e18 * +prices[`priceOn${scan}`]
         }
     })
     await Promise.all(stakingPromises);

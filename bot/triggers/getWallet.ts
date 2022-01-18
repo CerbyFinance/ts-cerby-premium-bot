@@ -16,6 +16,9 @@ export async function getWallet(id: number, newWallet?: boolean) {
         await bot.sendMessage(id, `*Wallet connected:* \`${address}\``, { parse_mode: "markdown", reply_markup: getKeyboard(true) });
     }
     let message = await updateBalance(id, true);
+    if(message == -1) {
+        return;
+    }
     await user.reload()
     const text = `*Your wallet:* \`${user.address}\`\n` +
                  `*Balance:* ${numWithCommas(user.cerby || 0)} CERBY (${numWithCommas(user.usd || 0)} USD)`

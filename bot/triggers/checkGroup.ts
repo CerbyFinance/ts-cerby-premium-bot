@@ -17,6 +17,9 @@ export async function checkAccessToGroup(msg) {
         return bot.sendMessage(msg.from.id, noWalletMessage, { reply_markup: getKeyboard(false) });
     }
     let message = await updateBalance(user.id, true);
+    if(message == -1) {
+        return;
+    }
     await user.reload();
 
     let inviteLinks = [];

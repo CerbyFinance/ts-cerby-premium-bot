@@ -47,7 +47,7 @@ export async function getAmount(address: string) {
         }
     });
     let liquidPromises = Object.keys(Rpcs).map(async (rpc) => {
-        for(let attempt; attempt <= 5; attempt++) {
+        for(let attempt = 0; attempt <= 5; attempt++) {
             try {
                 const balance: number = await Rpcs[rpc].methods.balanceOf(address).call();
 
@@ -58,7 +58,7 @@ export async function getAmount(address: string) {
                 break;
             } catch(err) {
                 if(attempt == 5) {
-                    throw `There have already been more than 5 attempts to get a balance, which ended in an error. Chain: ${rpc}`
+                    throw `There have already been more than 5 attempts to get a balance, which ended in an error. Chain: ${rpc}\n\n${err}`
                 }
             }
         }

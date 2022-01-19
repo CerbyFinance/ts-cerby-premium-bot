@@ -4,9 +4,10 @@ import { updateBalance } from "./updateBalance";
 import { chatValidator } from "../bot/helpers/groupValidator/main";
 import { kickChatMember } from "./kickuser";
 import { bot } from "../bot/main";
+import { superUserErrorHandler } from "./superUserErrorHandler";
 
 const maxTime = 5 * 60 * 1e3; // 5 minutes
-const maxAwait = 10 * 60; // 20 seconds
+const maxAwait = 10 * 1e3; // 10 seconds
 
 
 export async function startBalanceChecker() {
@@ -23,7 +24,9 @@ export async function startBalanceChecker() {
         const startUpdateTime = Date.now()
         let message = await updateBalance(user.id, false, true);
         if(message == -1) {
-            console.error("Balance checker instance is stopped")
+            const errorMessage = "Current balance checker instance is stopped";
+            superUserErrorHandler(errorMessage);
+            console.error(errorMessage)
             break;
         }
         let updateTime = Date.now() - startUpdateTime;

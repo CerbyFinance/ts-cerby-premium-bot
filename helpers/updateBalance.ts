@@ -1,9 +1,10 @@
-import { isIfStatement } from "typescript";
+import { collapseTextChangeRangesAcrossMultipleVersions, isIfStatement } from "typescript";
 import { getUser } from "../database/user";
 import { getAmount } from "./getAmount";
 import { bot } from "../bot/main";
 import { clean } from "../bot/helpers/clean";
 import { getKeyboard } from "../bot/triggers/getKeyboard";
+import { superUserErrorHandler } from "./superUserErrorHandler";
 
 export async function updateBalance(id: number, userRequest = false, force = false): Promise<userMessage | -1 | void> {
     const user = await getUser(id);
@@ -21,7 +22,12 @@ export async function updateBalance(id: number, userRequest = false, force = fal
 
             await user.save();
         } catch(err) {
-            bot.editMessageText("There was a problem with the bot. We are trying to resolve it as quickly as possible. Please try again later.", { chat_id: message.chat.id, message_id: message.message_id, parse_mode: "markdown" });
+            console.error(err);
+            superUserErrorHandler(err);
+            if(userRequest) {
+                message = await message;
+                bot.editMessageText("There was a problem with the bot. We are trying to resolve it as quickly as possible. Please try again later.", { chat_id: message.chat.id, message_id: message.message_id, parse_mode: "markdown" });
+            }
             return -1;
         }
         if(userRequest) {

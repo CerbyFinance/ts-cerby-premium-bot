@@ -1,5 +1,6 @@
-import { getJoinedUsers } from "../database/user";
-import { getAllChatConfig } from "../database/chat";
+import { getJoinedUsers, getUser, User } from "../database/user";
+import { getUserWallets } from "../database/wallet";
+import { getAllChatConfig, Chat } from "../database/chat";
 import { updateBalance } from "./updateBalance";
 import { chatValidator } from "../bot/helpers/groupValidator/main";
 import { kickChatMember } from "./kickuser";
@@ -21,29 +22,13 @@ export async function startBalanceChecker() {
 
     for(let i = 0; i < users.length; i++) {
         let user = users[i];
-        const startUpdateTime = Date.now()
-        let message = await updateBalance(user.id, false, true);
-        if(message == -1) {
+        try {
+            await userBalanceCheck(user, allGroups);
+        } catch(err) {
             const errorMessage = "Current balance checker instance is stopped";
             superUserErrorHandler(errorMessage);
-            console.error(errorMessage)
+            console.error(errorMessage);
             break;
-        }
-        let updateTime = Date.now() - startUpdateTime;
-        console.log(`User(${user.id} ${user.first_name}${user.last_name ? ' ' + user.last_name : ''}) balance updated with ${updateTime / 1e3} seconds`);
-        await user.reload();
-        const joinedGroups = user.joinedGroups;
-        for(let chatIndex = 0; chatIndex < joinedGroups.length; chatIndex++) {
-            const chat = joinedGroups[chatIndex];
-            const verdict = chatValidator(allGroups[chat], user);
-            if(!verdict.allowed) {
-                user.joinedGroups.splice(chatIndex, 1);
-                user.changed("joinedGroups", true);
-                await user.save();
-                await kickChatMember(chat, user.id, `❌ [${user.first_name}${user.last_name ? ' ' + user.last_name : ''}](tg://user?id=${user.id}) was kicked due to having not enough CERBY's!`);
-                await bot.sendMessage(user.id, `❌ You have been excluded from the ${allGroups[chat].title} chat.\n` +
-                                              `*Cause:* ${verdict.comment}`, { parse_mode: "markdown" });
-            }
         }
         if(users.length - 1 != i) {
             const averageTime = (Date.now() - startTime) / i;
@@ -57,4 +42,56 @@ export async function startBalanceChecker() {
     console.log(`The balance check procedure is completed. Waiting for next: ${Math.ceil(timeLeft / 1000)} seconds`);
     setTimeout(startBalanceChecker, timeLeft)
     return;
+}
+
+export async function userBalanceCheck(user: number | User, allGroups?: {[key: number]: Chat}) {
+    if(typeof user == 'number') {
+        user = await getUser(user)
+    }
+    if((!user.joinedGroups || !user.joinedGroups.length) && !user.notification) {
+        return;
+    }
+    if(!allGroups) {
+        const allChatConfig = await getAllChatConfig();
+        allGroups = {};
+        allChatConfig.forEach((chat) => {
+            allGroups[chat.id] = chat;
+        });
+    }
+
+    const startUpdateTime = Date.now()
+    let message = await updateBalance(user.id, false, true);
+    if(message == -1) {
+        throw "Update Balance returned -1";
+    }
+    let updateTime = Date.now() - startUpdateTime;
+    console.log(`User(${user.id} ${user.first_name}${user.last_name ? ' ' + user.last_name : ''}) balance updated with ${updateTime / 1e3} seconds`);
+
+    const wallets = await getUserWallets(user.id)
+    let amountBalance = {
+        cerby: 0,
+        usd: 0
+    }
+    wallets.forEach((wallet) => {
+        const walletBalance = JSON.parse(wallet.balance);
+        amountBalance.cerby += walletBalance.cerby || 0;
+        amountBalance.usd += walletBalance.usd || 0;
+    });
+
+    console.log(allGroups);
+
+    const joinedGroups = user.joinedGroups;
+    for(let chatIndex = 0; chatIndex < joinedGroups.length; chatIndex++) {
+        const chat = joinedGroups[chatIndex];
+        console.log(chat);
+        const verdict = chatValidator(allGroups[chat], amountBalance);
+        if(!verdict.allowed) {
+            user.joinedGroups.splice(chatIndex, 1);
+            user.changed("joinedGroups", true);
+            await user.save();
+            await kickChatMember(chat, user.id, `❌ [${user.first_name}${user.last_name ? ' ' + user.last_name : ''}](tg://user?id=${user.id}) was kicked due to having not enough CERBY's!`);
+            await bot.sendMessage(user.id, `❌ You have been excluded from the ${allGroups[chat].title} chat.\n` +
+                                            `*Cause:* ${verdict.comment}`, { parse_mode: "markdown" });
+        }
+    }
 }

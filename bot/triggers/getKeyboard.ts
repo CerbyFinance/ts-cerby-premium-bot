@@ -5,7 +5,7 @@ export function getKeyboard(walletTied: boolean) {
             { text: "Get wallet" }
         ],
         [
-            { text: "Disconnect wallet"}, { text: "Check access to groups" }
+            { text: "Settings"}, { text: "Check access to groups" }
         ]
     ], resize_keyboard: true}
     } else {

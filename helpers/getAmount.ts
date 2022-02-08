@@ -42,7 +42,13 @@ export async function getAmount(address: string) {
         if(tempReceived.data.user != null) {
             staking[stakingSymbol] = {
                 staked: +tempReceived.data.user.stakedAmount,
-                stakedInUsd: +tempReceived.data.user.stakedAmount * +prices[`priceOn${stakingSymbol}`]
+                stakedInUsd: +tempReceived.data.user.stakedAmount * +prices[`priceOn${stakingSymbol}`],
+                stakes: {}
+            }
+            if(tempReceived.data.user.stakes) {
+                tempReceived.data.user.stakes.forEach((stake) => {
+                    staking[stakingSymbol].stakes[stake.id] = stake;
+                })
             }
         }
     });
@@ -86,6 +92,15 @@ function getStakedAmountQuery(address) {
     return `query {
         user(id: "${address.toLowerCase()}") {
             stakedAmount
+            stakes(first: 1000, orderBy: id, where: { completedAt: null, canceledAt: null }) {
+                id
+                stakedAmount
+                lockDays
+                startedAt
+                completedAt
+                canceledAt
+                blockNumber
+            }
         }
       }`.split(/ |\n/gm).filter(el => el).join(' ');
 }

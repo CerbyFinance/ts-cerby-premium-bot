@@ -6,27 +6,39 @@ import { getKeyboard } from "./getKeyboard";
 import { updateBalance } from "../../helpers/updateBalance";
 import { numWithCommas } from "../helpers/numWithCommas";
 import { chatValidator } from "../helpers/groupValidator/main";
+import { getUserWallets } from "../../database/wallet";
 
 
 export async function checkAccessToGroup(msg) {
     if(msg.chat.type != 'private') {
         return;
     }
-    const user = await getUser(msg.from.id);
-    if(!user || !user.address) {
+    const wallets = await getUserWallets(msg.from.id)
+    if(!wallets.length) {
         return bot.sendMessage(msg.from.id, noWalletMessage, { reply_markup: getKeyboard(false) });
     }
-    let message = await updateBalance(user.id, true);
+    let message = await updateBalance(msg.from.id, true);
     if(message == -1) {
         return;
     }
-    await user.reload();
+    await Promise.all(wallets.map(wallet => wallet.reload()));
+
+    let amountBalance = {
+        cerby: 0,
+        usd: 0
+    }
+
+    wallets.forEach((wallet) => {
+        const walletBalance = JSON.parse(wallet.balance);
+        amountBalance.cerby += walletBalance.cerby || 0;
+        amountBalance.usd += walletBalance.usd || 0;
+    });
 
     let inviteLinks = [];
     let groups = await Promise.all((await getAllChatConfig()).map(async (chat) => {
         const config = JSON.parse(chat.config);
         let message = `*${chat.title}*\n`;
-        let verdict = chatValidator(chat, user)
+        let verdict = chatValidator(chat, amountBalance)
         if(chat.type == "minBalance") {
             message += `*Minimum balance for join:* ${numWithCommas(config.minBalance)}${!verdict.allowed ? ` (${verdict.percent.toFixed(1)}% you already have)` : ''}\n`;
         }
@@ -53,7 +65,7 @@ export async function checkAccessToGroup(msg) {
             }
      });
     } else {
-        bot.sendMessage(user.id, text, {
+        bot.sendMessage(msg.from.id, text, {
             parse_mode: "markdown",
             reply_markup: {
                 inline_keyboard: inviteLinks

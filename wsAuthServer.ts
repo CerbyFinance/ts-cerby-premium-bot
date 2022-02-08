@@ -43,8 +43,11 @@ export async function startAuthorizeServer() {
         }
         const signingAddress = recoverPersonalSignature({ data: expectedMsgOfSignature, signature })
 
-        await linkWallet(session.id, signingAddress, signature, expectedMsgOfSignature);
-        getWallet(user.id, true);
+        const success = await linkWallet(session.id, signingAddress, signature, expectedMsgOfSignature);
+        if(!success) {
+            throw "Link wallet returned error, maybe this wallet already connected";
+        }
+        getWallet(user.id, signingAddress);
 
         clean({
             chat: {id: session.id},

@@ -31,7 +31,7 @@ const sessions = DB.define<Session>('session', {
     updatedAt: false
 });
 
-export async function createSession(id): Promise<Session | null> {
+export async function createSession(id: number, sessionExistsCallback?): Promise<Session | null> {
     try {
         let [session, created] = await sessions.findOrCreate({
             where: { id },
@@ -42,10 +42,15 @@ export async function createSession(id): Promise<Session | null> {
         });
         if(!created) {
             if(session.botMessage) {
-                clean({
-                    chat: {id: session.id},
-                    message_id: session.botMessage
-                });
+
+                if(sessionExistsCallback) {
+                    sessionExistsCallback(session.id, session.botMessage, "This session has been deactivated");
+                } else {
+                    clean({
+                        chat: {id: session.id},
+                        message_id: session.botMessage
+                    });
+                }
             }
             await session.destroy();
             return createSession(id);

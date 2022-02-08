@@ -11,7 +11,7 @@ export async function connectWallet(msg: userMessage) {
         return;
     }
     const user = await createUser(msg);
-    if(user.address) {
+    if(user.wallets) {
         bot.sendMessage(msg.from.id, "You already have a connected wallet.", { reply_markup: getKeyboard(true) });
         getWallet(user.id);
     } else {

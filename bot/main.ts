@@ -2,12 +2,13 @@ import * as TelegramBot from 'node-telegram-bot-api';
 import { botToken } from '../config.json';
 import { connectWallet } from './triggers/connectWallet'
 import { start } from './triggers/start';
-import { disconnectWalletTrigger } from './triggers/disconnectWallet'
 import { callbackQueryParser } from './triggers/callbackQuery';
 import { getWallet } from './triggers/getWallet';
 import { initialize } from './triggers/initializeGroup';
 import { checkAccessToGroup } from './triggers/checkGroup';
 import { canInviteUser } from './triggers/canInviteUser';
+import { settings } from './triggers/settings';
+import { disconnectAllWalletsStub } from './triggers/disconnectWallet';
 
 export const bot = new TelegramBot(botToken, { polling: true });
 
@@ -22,7 +23,8 @@ export async function startBotPolling() {
          getWallet(msg.from.id)
         });
 
-    bot.onText(/^Disconnect wallet$/, disconnectWalletTrigger);
+    bot.onText(/^Disconnect wallet$/, disconnectAllWalletsStub);
+    bot.onText(/^Settings$/, settings);
     bot.onText(/^Check access to groups$/, checkAccessToGroup);
     bot.onText(/^\/initialization (\w+) (\d+)$/, initialize);
     bot.on("callback_query", callbackQueryParser);

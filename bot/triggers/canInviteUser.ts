@@ -1,5 +1,6 @@
 import { getChat } from "../../database/chat";
 import { getUser } from '../../database/user';
+import { getUserWallets } from "../../database/wallet";
 import { chatValidator } from "../helpers/groupValidator/main";
 import { bot } from "../main";
 import { getKeyboard } from './getKeyboard';
@@ -10,8 +11,18 @@ export async function canInviteUser(ctx) {
         return;
     }
     const user = await getUser(ctx.from.id);
-    if(user && user.address) {
-        const verdict = chatValidator(chat, user);
+    const wallets = await getUserWallets(ctx.from.id);
+    if(user && user.wallets && wallets.length) {
+        let amountBalance = {
+            cerby: 0,
+            usd: 0
+        }
+        wallets.forEach((wallet) => {
+            const walletBalance = JSON.parse(wallet.balance);
+            amountBalance.cerby += walletBalance.cerby || 0;
+            amountBalance.usd += walletBalance.usd || 0;
+        })
+        const verdict = chatValidator(chat, amountBalance);
         if(verdict.allowed) {
             bot.approveChatJoinRequest(chat.id, user.id);
             bot.sendMessage(chat.id, `👋 [${user.first_name}${user.last_name ? ' ' + user.last_name : ''}](tg://user?id=${user.id}), Welcome to ${chat.title}!\nYou can claim your free merch here: https://cerbymerch.com`, { parse_mode: "markdown" })

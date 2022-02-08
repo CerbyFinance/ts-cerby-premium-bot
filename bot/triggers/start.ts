@@ -13,6 +13,6 @@ export async function start(msg: userMessage) {
     const user = await createUser(msg);
     let message = await bot.sendMessage(msg.from.id, `${msg.from.first_name}${msg.from.last_name ? ' ' + msg.from.last_name : ''}, welcome and information message..`, {
         parse_mode: "markdown",
-        reply_markup: getKeyboard(Boolean(user.address))
+        reply_markup: getKeyboard(Boolean(user.wallets))
     });
 }

@@ -45,13 +45,13 @@ export async function updateBalance(id: number, userRequest = false, force = fal
                                 }
                                 if(completedDate <= nowTime && !amount[chain].stakes[stakeId].notified) {
                                     amount[chain].stakes[stakeId].notified = true;
-                                    bot.sendMessage(user.id, `⏰ Your stake (ID: ${stakeId}) *was matured*! Consider ending the stake asap to avoid penalties: https://app.cerby.fi/stakes!\n` + additionalText,
+                                    bot.sendMessage(user.id, `⏰ Your stake (ID: ${stakeId}) *was matured*! Consider ending the stake asap to avoid penalties: https://app.cerby.fi/!\n` + additionalText,
                                                     { parse_mode: "markdown" });
                                     
                                 }
                                 if(completedDate <= nowTime && amount[chain].stakes[stakeId].notify7day < nowTime - 0x240c8400) {
                                     amount[chain].stakes[stakeId].notify7day = nowTime;
-                                    bot.sendMessage(user.id, `⏰ Your stake (ID: ${stakeId}) *was matured 7 days ago!*\n` + additionalText,
+                                    bot.sendMessage(user.id, `⏰ Your stake (ID: ${stakeId}) *was matured 7 days ago!* Consider ending the stake asap to avoid penalties: https://app.cerby.fi/!\n` + additionalText,
                                                     { parse_mode: "markdown" });
                                 }
                             })

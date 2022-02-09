@@ -7,8 +7,8 @@ import { kickChatMember } from "./kickuser";
 import { bot } from "../bot/main";
 import { superUserErrorHandler } from "./superUserErrorHandler";
 
-const maxTime = 5 * 60 * 1e3; // 5 minutes
-const maxAwait = 10 * 1e3; // 10 seconds
+const maxTime = 30 * 60 * 1e3; // 5 minutes
+const maxAwait = 1000 * 1e3; // 10 seconds
 
 
 export async function startBalanceChecker() {

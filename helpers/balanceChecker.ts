@@ -79,20 +79,20 @@ export async function userBalanceCheck(user: number | User, allGroups?: {[key: n
         amountBalance.usd += walletBalance.usd || 0;
     });
 
-    console.log(allGroups);
-
-    const joinedGroups = user.joinedGroups;
-    for(let chatIndex = 0; chatIndex < joinedGroups.length; chatIndex++) {
-        const chat = joinedGroups[chatIndex];
-        console.log(chat);
-        const verdict = chatValidator(allGroups[chat], amountBalance);
-        if(!verdict.allowed) {
-            user.joinedGroups.splice(chatIndex, 1);
-            user.changed("joinedGroups", true);
-            await user.save();
-            await kickChatMember(chat, user.id, `❌ [${user.first_name}${user.last_name ? ' ' + user.last_name : ''}](tg://user?id=${user.id}) was kicked due to having not enough CERBY's!`);
-            await bot.sendMessage(user.id, `❌ You have been excluded from the ${allGroups[chat].title} chat.\n` +
-                                            `*Cause:* ${verdict.comment}`, { parse_mode: "markdown" });
+    if(user.joinedGroups) {
+        const joinedGroups = user.joinedGroups;
+        for(let chatIndex = 0; chatIndex < joinedGroups.length; chatIndex++) {
+            const chat = joinedGroups[chatIndex];
+            console.log(chat);
+            const verdict = chatValidator(allGroups[chat], amountBalance);
+            if(!verdict.allowed) {
+                user.joinedGroups.splice(chatIndex, 1);
+                user.changed("joinedGroups", true);
+                await user.save();
+                await kickChatMember(chat, user.id, `❌ [${user.first_name}${user.last_name ? ' ' + user.last_name : ''}](tg://user?id=${user.id}) was kicked due to having not enough CERBY's!`);
+                await bot.sendMessage(user.id, `❌ You have been excluded from the ${allGroups[chat].title} chat.\n` +
+                                                `*Cause:* ${verdict.comment}`, { parse_mode: "markdown" });
+            }
         }
     }
 }

@@ -54,7 +54,8 @@ export async function createUser(userMessage: userMessage): Promise<User | null>
             defaults: {
                 first_name: userMessage.from.first_name,
                 last_name: userMessage.from.last_name,
-                wallets: 0
+                wallets: 0,
+                notification: true
             }
         });
         if(!created) {

@@ -27,7 +27,8 @@ export async function startBalanceChecker() {
         } catch(err) {
             const errorMessage = "Current balance checker instance is stopped";
             superUserErrorHandler(errorMessage);
-            console.error(errorMessage);
+            superUserErrorHandler(err);
+            console.error(err);
             break;
         }
         if(users.length - 1 != i) {

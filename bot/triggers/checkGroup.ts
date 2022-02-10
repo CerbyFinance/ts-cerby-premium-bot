@@ -15,7 +15,7 @@ export async function checkAccessToGroup(msg) {
     }
     const wallets = await getUserWallets(msg.from.id)
     if(!wallets.length) {
-        return bot.sendMessage(msg.from.id, noWalletMessage, { reply_markup: getKeyboard(false) });
+        return bot.sendMessage(msg.from.id, noWalletMessage, { reply_markup: getKeyboard(wallets.length) });
     }
     let message = await updateBalance(msg.from.id, true);
     if(message == -1) {

@@ -36,7 +36,7 @@ export async function updateBalance(id: number, userRequest = false, force = fal
                                     completedDate = startedAt + 0x5265c00 * lockDays;
                                 const additionalText = `*Wallet:* \`${wallet.address}\`\n` +
                                                     `*Chain:* ${chain.length == 3 ? chain.toUpperCase() : chain}\n` +
-                                                    `*Amount staked:* ${numWithCommas(amount[chain].stakes[stakeId].stakedAmount)}`
+                                                    `*Amount staked:* ${numWithCommas(amount[chain].stakes[stakeId].stakedAmount)} CERBY`
                                 console.log(completedDate);
                                 if(completedDate > nowTime - 0x5265c00 && completedDate < nowTime + 0x5265c00 && !amount[chain].stakes[stakeId].notify24h) {
                                     amount[chain].stakes[stakeId].notify24h = true;

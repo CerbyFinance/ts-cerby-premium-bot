@@ -35,7 +35,7 @@ export async function disconnectWallet(userId: number, walletAddress?: string, m
     await user.save();
 
     if(message) {
-        await bot.sendMessage(user.id, message, { parse_mode: "markdown", reply_markup: getKeyboard(!!user.wallets) });
+        await bot.sendMessage(user.id, message, { parse_mode: "markdown", reply_markup: getKeyboard(user.wallets) });
     }
-    bot.sendMessage(user.id, `You can connect the wallet back using the *${user.wallets ? "Settings –> Connect another wallet" : "Connect wallet"}* button`, { parse_mode: "markdown", reply_markup: getKeyboard(!!user.wallets) });
+    bot.sendMessage(user.id, `You can connect the wallet back using the *${user.wallets ? "Settings –> Connect another wallet" : "Connect wallet"}* button`, { parse_mode: "markdown", reply_markup: getKeyboard(user.wallets) });
 }

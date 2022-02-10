@@ -35,10 +35,10 @@ export async function canInviteUser(ctx) {
             user.changed('joinedGroups', true);
             return await user.save()
         } else {
-            bot.sendMessage(user.id, `You have applied to join the "${chat.title}". Your join request has been rejected because you do not qualify.\n*Cause:* ${verdict.comment}`, { reply_markup: getKeyboard(true), parse_mode: "markdown" })
+            bot.sendMessage(user.id, `You have applied to join the "${chat.title}". Your join request has been rejected because you do not qualify.\n*Cause:* ${verdict.comment}`, { reply_markup: getKeyboard(user.wallets), parse_mode: "markdown" })
         }
     } else {
-        bot.sendMessage(ctx.from.id, `You have applied to join the "${chat.title}". To do this, you need to authorize your wallet.`, { reply_markup: getKeyboard(false) })
+        bot.sendMessage(ctx.from.id, `You have applied to join the "${chat.title}". To do this, you need to authorize your wallet.`, { reply_markup: getKeyboard(user.wallets) })
     }
 
     return bot.declineChatJoinRequest(ctx.chat.id, ctx.from.id);

@@ -1,8 +1,8 @@
-export function getKeyboard(walletTied: boolean) {
+export function getKeyboard(walletTied: number) {
     if(walletTied) {
         return {keyboard: [
         [
-            { text: "Get wallet" }
+            { text: walletTied > 1 ? "Your wallets" : "Your wallet" }
         ],
         [
             { text: "Settings"}, { text: "Check access to groups" }

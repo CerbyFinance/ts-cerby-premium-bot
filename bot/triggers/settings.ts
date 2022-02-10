@@ -7,6 +7,7 @@ import { authUrl } from '../../config.json';
 import { getUserWallets, getWallet } from "../../database/wallet";
 import { shortenAddress } from "./getWallet";
 import { numWithCommas } from "../helpers/numWithCommas";
+import { chainInfo } from "./getWallet";
 
 const settingsMessage = '⚙️ *Settings*';
 const maxWallet = 12;
@@ -23,7 +24,7 @@ export async function settings(ctx) {
             reply_markup: getSettingsInlineKeyboard(user)
         })
     } else {
-        bot.sendMessage(user.id, noWalletMessage, { reply_markup: getKeyboard(false) });
+        bot.sendMessage(user.id, noWalletMessage, { reply_markup: getKeyboard(user.wallets) });
     }
 }
 
@@ -39,7 +40,7 @@ export async function goToSettingsCallback(query) {
     } else {
         bot.editMessageText(noWalletMessage, {
             chat_id: query.message.chat.id, message_id: query.message.message_id,
-            reply_markup: getKeyboard(false)
+            reply_markup: getKeyboard(user.wallets)
         })
     }
 }
@@ -73,7 +74,7 @@ export function getSettingsInlineKeyboard(user: User) {
     return {
         inline_keyboard: [
             ...(user.wallets > 1 ? [[{
-                text: "My wallets",
+                text: "Your wallets",
                 callback_data: "My wallets"
             }]] : []),
             [{
@@ -217,7 +218,8 @@ export async function getWalletCallback(query) {
         }
         const walletBalance = JSON.parse(wallet.balance);
         let text = `*Your wallet:* \`${wallet.address}\`\n` +
-                   `*Balance:* ${numWithCommas(walletBalance.cerby || 0)} CERBY (${numWithCommas(walletBalance.usd || 0)} USD)`
+                   `*Balance:* ${numWithCommas(walletBalance.cerby || 0)} CERBY (${numWithCommas(walletBalance.usd || 0)} USD)\n`
+                   + chainInfo(walletBalance);
         bot.editMessageText(text, {
             chat_id: query.message.chat.id, message_id: query.message.message_id,
             parse_mode: "markdown",

@@ -14,10 +14,10 @@ export async function disconnectAllWalletsStub(msg: userMessage) {
         bot.sendMessage(msg.from.id, "This feature has been moved to *Settings*.",
             {
                 parse_mode: "markdown",
-                reply_markup: getKeyboard(true)
+                reply_markup: getKeyboard(user.wallets)
             })
     } else {
-        bot.sendMessage(user.id, noWalletMessage, { reply_markup: getKeyboard(false) });
+        bot.sendMessage(user.id, noWalletMessage, { reply_markup: getKeyboard(user.wallets) });
     }
 
 }
@@ -50,7 +50,7 @@ export async function disconnectAllWalletsTrigger(query) {
         })
     } else {
         clean({ ...query.message })
-        bot.sendMessage(user.id, noWalletMessage, { reply_markup: getKeyboard(false) });
+        bot.sendMessage(user.id, noWalletMessage, { reply_markup: getKeyboard(user.wallets) });
     }
 }
 
@@ -82,7 +82,7 @@ export async function disconnectWalletTrigger(query) {
         })
     } else {
         clean({ ...query.message })
-        bot.sendMessage(user.id, noWalletMessage, { reply_markup: getKeyboard(false) });
+        bot.sendMessage(user.id, noWalletMessage, { reply_markup: getKeyboard(user.wallets) });
     }
 }
 

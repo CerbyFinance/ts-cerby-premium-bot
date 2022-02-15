@@ -1,9 +1,6 @@
-import { collapseTextChangeRangesAcrossMultipleVersions, isIfStatement } from "typescript";
 import { getUser } from "../database/user";
 import { getAmount } from "./getAmount";
 import { bot } from "../bot/main";
-import { clean } from "../bot/helpers/clean";
-import { getKeyboard } from "../bot/triggers/getKeyboard";
 import { superUserErrorHandler } from "./superUserErrorHandler";
 import { getUserWallets } from "../database/wallet";
 import { numWithCommas } from "../bot/helpers/numWithCommas";
@@ -31,7 +28,7 @@ export async function updateBalance(id: number, userRequest = false, force = fal
                                 if(walletBalance && walletBalance[chain].stakes) {
                                     amount[chain].stakes[stakeId] = Object.assign(amount[chain].stakes[stakeId], walletBalance[chain].stakes[stakeId]);
                                 }
-                                const startDay = +amount[chain].stakes[stakeId].startDay * 1e3,
+                                const startDay = +amount[chain].stakes[stakeId].startDay,
                                     lockDays = +amount[chain].stakes[stakeId].lockDays,
                                     completedDate = 1635552000000 + (startDay + lockDays) * 0x5265c00;
                                 const additionalText = `*Wallet:* \`${wallet.address}\`\n` +

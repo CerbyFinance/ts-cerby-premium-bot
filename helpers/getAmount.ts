@@ -96,7 +96,7 @@ function getStakedAmountQuery(address) {
                 id
                 stakedAmount
                 lockDays
-                startedAt
+                startDay
                 completedAt
                 canceledAt
                 blockNumber

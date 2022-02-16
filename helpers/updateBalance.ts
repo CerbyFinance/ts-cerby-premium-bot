@@ -30,7 +30,7 @@ export async function updateBalance(id: number, userRequest = false, force = fal
                                 }
                                 const startDay = +amount[chain].stakes[stakeId].startDay,
                                     lockDays = +amount[chain].stakes[stakeId].lockDays,
-                                    completedDate = 1635552000000 + (startDay + lockDays) * 0x5265c00;
+                                    completedDate = 1635465600000 + (startDay + lockDays) * 0x5265c00;
                                 const additionalText = `*Wallet:* \`${wallet.address}\`\n` +
                                                     `*Chain:* ${chain.length == 3 ? chain.toUpperCase() : chain}\n` +
                                                     `*Amount staked:* ${numWithCommas(amount[chain].stakes[stakeId].stakedAmount)} CERBY`

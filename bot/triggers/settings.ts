@@ -43,6 +43,7 @@ export async function goToSettingsCallback(query) {
             reply_markup: getKeyboard(user.wallets)
         })
     }
+    bot.answerCallbackQuery(query.id, "⚙️ Settings")
 }
 
 export async function notificationCallback(query) {

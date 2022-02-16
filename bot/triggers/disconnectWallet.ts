@@ -48,9 +48,11 @@ export async function disconnectAllWalletsTrigger(query) {
                 ]]
             }
         })
+        bot.answerCallbackQuery(query.id, "Disconnect all wallets");
     } else {
         clean({ ...query.message })
         bot.sendMessage(user.id, noWalletMessage, { reply_markup: getKeyboard(user.wallets) });
+        bot.answerCallbackQuery(query.id, noWalletMessage);
     }
 }
 
@@ -80,9 +82,11 @@ export async function disconnectWalletTrigger(query) {
                 ]]
             }
         })
+        bot.answerCallbackQuery(query.id, `Disconnect ${wallet}`);
     } else {
         clean({ ...query.message })
         bot.sendMessage(user.id, noWalletMessage, { reply_markup: getKeyboard(user.wallets) });
+        bot.answerCallbackQuery(query.id, noWalletMessage);
     }
 }
 

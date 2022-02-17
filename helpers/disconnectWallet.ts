@@ -4,6 +4,7 @@ import { getUserWallets, getWallet } from "../database/wallet";
 import { getKeyboard } from "../bot/triggers/getKeyboard";
 import { kickChatMember } from "./kickuser";
 import { userBalanceCheck } from "./balanceChecker";
+import { superUserErrorHandler } from "./superUserErrorHandler";
 
 export async function disconnectWallet(userId: number, walletAddress?: string, message?: string, justNotify = false) {
     let user = await getUser(userId);
@@ -29,8 +30,6 @@ export async function disconnectWallet(userId: number, walletAddress?: string, m
             })
             user.joinedGroups = [];
         }
-    } else {
-        userBalanceCheck(user);
     }
     await user.save();
 
@@ -38,4 +37,11 @@ export async function disconnectWallet(userId: number, walletAddress?: string, m
         await bot.sendMessage(user.id, message, { parse_mode: "markdown", reply_markup: getKeyboard(user.wallets) });
     }
     bot.sendMessage(user.id, `You can connect the wallet back using the *${user.wallets ? "Settings –> Connect another wallet" : "Connect wallet"}* button`, { parse_mode: "markdown", reply_markup: getKeyboard(user.wallets) });
+    if(user.wallets) {
+        try {
+            await userBalanceCheck(user);
+        } catch(err) {
+            superUserErrorHandler(err);
+        }
+    }
 }

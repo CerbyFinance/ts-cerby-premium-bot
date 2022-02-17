@@ -3,7 +3,8 @@ import { checkPermissions } from "./checkPermissions";
 import { superUserErrorHandler } from "./superUserErrorHandler";
 
 export async function kickChatMember(chat: number, id: number, message?) {
-    if(!checkPermissions(chat, id)) {
+    const permissions = await checkPermissions(chat, id);
+    if(!permissions) {
         try {
             await bot.banChatMember(chat, id, { until_date: Date.now() / 1e3 + 90 })
             if(message) {

@@ -66,6 +66,7 @@ export async function getAmount(address: string) {
                 if(attempt == 5) {
                     throw `There have already been more than 5 attempts to get a balance, which ended in an error. Chain: ${rpc}\n\n${err}`
                 }
+                await new Promise((r) => setTimeout(r, 5000));
             }
         }
     })

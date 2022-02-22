@@ -15,7 +15,7 @@ export async function updateBalance(id: number, userRequest = false, force = fal
         message = bot.sendMessage(id, "🕖 Updating balance...", { parse_mode: "markdown" });
     }
     const nowTime = Date.now();
-    const _walletsPromise = wallets.map(async (wallet) => {
+    const _walletsPromise = await Promise.all(wallets.map(async (wallet) => {
         if(wallet.address && (+wallet.balanceUpdatedAt + 30000 < nowTime || force)) {
             try {
                 const amount = await getAmount(wallet.address);
@@ -80,8 +80,11 @@ export async function updateBalance(id: number, userRequest = false, force = fal
         } else {
             return;
         }
-    });
-    await Promise.all(_walletsPromise);
+    }));
+    if(_walletsPromise.includes(-1)) {
+        return -1;
+    }
+    
     if(userRequest) {
         return message;
     }

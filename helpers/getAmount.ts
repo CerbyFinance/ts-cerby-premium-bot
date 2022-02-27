@@ -1,5 +1,7 @@
 import { request } from "./request";
 import { AbiItem } from 'web3-utils';
+import { nextTick } from "process";
+import { GeneratedIdentifierFlags } from "typescript";
 const Web3 = require('web3');
 
 const stakingUrls = {
@@ -34,21 +36,31 @@ export async function getAmount(address: string) {
     let staking = {};
     let liquid = {};
     let stakingPromises = Object.keys(stakingUrls).map(async (stakingSymbol) => {
-        let tempReceived = await request("POST", stakingUrls[stakingSymbol], { query: getStakedAmountQuery(address) });
-        if(tempReceived['errors']) {
-            console.error(tempReceived.errors);
-            return;
-        }
-        if(tempReceived.data.user != null) {
-            staking[stakingSymbol] = {
-                staked: +tempReceived.data.user.stakedAmount,
-                stakedInUsd: +tempReceived.data.user.stakedAmount * +prices[`priceOn${stakingSymbol}`],
-                stakes: {}
+        while(true) {
+            let tempReceived = await request("POST", stakingUrls[stakingSymbol], { query: getStakedAmountQuery(address) });
+            if(tempReceived['errors']) {
+                console.error(tempReceived.errors);
+                return;
             }
-            if(tempReceived.data.user.stakes) {
-                tempReceived.data.user.stakes.forEach((stake) => {
-                    staking[stakingSymbol].stakes[stake.id] = stake;
-                })
+            if(tempReceived.data.user != null) {
+                staking[stakingSymbol] = {
+                    staked: +tempReceived.data.user.stakedAmount,
+                    stakedInUsd: +tempReceived.data.user.stakedAmount * +prices[`priceOn${stakingSymbol}`],
+                    stakes: {}
+                }
+                if(tempReceived.data.user.stakes) {
+                    tempReceived.data.user.stakes.forEach((stake) => {
+                        staking[stakingSymbol].stakes[stake.id] = stake;
+                    })
+                }
+                return;
+            } else if(tempReceived.data.user == null) {
+                return;
+            } else {
+                console.log("Maybe chain was recogniezed", address)
+                console.log(tempReceived.data)
+                await new Promise((r) => setTimeout(r, 3000));
+                continue;
             }
         }
     });

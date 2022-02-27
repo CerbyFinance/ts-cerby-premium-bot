@@ -74,13 +74,10 @@ export function shortenAddress(address) {
 
 export function chainInfo(walletBalance) {
     let additionalWalletInfo = '';
-    console.log(walletBalance)
     Object.keys(walletBalance).filter(v => walletBalance[v] instanceof Object).forEach((chain) => {
-        console.log(chain);
         if(walletBalance[chain].liquid || walletBalance[chain].staked) {
             additionalWalletInfo += `*${chain.length > 3 ? chain : chain.toUpperCase()}:* ${numWithCommas(Math.floor(walletBalance[chain].liquid || 0))} CERBY (${numWithCommas(Math.floor(walletBalance[chain].liquidInUsd || 0))} USD), Staked: ${numWithCommas(Math.floor(walletBalance[chain].staked || 0))} CERBY (${numWithCommas(Math.floor(walletBalance[chain].stakedInUsd || 0))} USD)\n`;
         }
     });
-    console.log(additionalWalletInfo)
     return additionalWalletInfo;
 }

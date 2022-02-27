@@ -5,20 +5,22 @@ import { superUserErrorHandler } from "./superUserErrorHandler";
 import { getUserWallets } from "../database/wallet";
 import { numWithCommas } from "../bot/helpers/numWithCommas";
 
+const walletBalanceUpdateTime = 60000;
+
 export async function updateBalance(id: number, userRequest = false, force = false): Promise<userMessage | -1 | void> {
     const user = await getUser(id);
     let message;
     const wallets = await getUserWallets(id);
     user.wallets = wallets.length;
     user.save();
-    if(userRequest && wallets.filter(wallet => +wallet.balanceUpdatedAt + 30000 < Date.now()).length) {
+    if(userRequest && wallets.filter(wallet => +wallet.balanceUpdatedAt + walletBalanceUpdateTime < Date.now()).length) {
         message = bot.sendMessage(id, "🕖 Updating balance...", { parse_mode: "markdown" });
     }
     const nowTime = Date.now();
     const _walletsPromise = await Promise.all(wallets.map(async (wallet) => {
-        if(wallet.address && (+wallet.balanceUpdatedAt + 30000 < nowTime || force)) {
+        if(wallet.address && (+wallet.balanceUpdatedAt + walletBalanceUpdateTime < nowTime || force)) {
             try {
-                const amount = await getAmount(wallet.address);
+                const amount = await getAmount(wallet.address, userRequest);
                 if(user.notification) {
                     // let currentStakes = {}
                     const walletBalance = JSON.parse(wallet.balance);
@@ -34,7 +36,6 @@ export async function updateBalance(id: number, userRequest = false, force = fal
                                 const additionalText = `*Wallet:* \`${wallet.address}\`\n` +
                                                     `*Chain:* ${chain.length == 3 ? chain.toUpperCase() : chain}\n` +
                                                     `*Amount staked:* ${numWithCommas(amount[chain].stakes[stakeId].stakedAmount)} CERBY`
-                                console.log(completedDate);
                                 if(completedDate > nowTime - 0x5265c00 && completedDate < nowTime + 0x5265c00 && !amount[chain].stakes[stakeId].notify24h) {
                                     amount[chain].stakes[stakeId].notify24h = true;
                                     bot.sendMessage(user.id, `⏰ Your stake (ID: ${stakeId}) will be *matured in 24 hours!*\n` + additionalText,

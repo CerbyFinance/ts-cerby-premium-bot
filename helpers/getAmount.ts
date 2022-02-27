@@ -2,6 +2,7 @@ import { request } from "./request";
 import { AbiItem } from 'web3-utils';
 import { nextTick } from "process";
 import { GeneratedIdentifierFlags } from "typescript";
+import { addQueue } from "./amountQueue";
 const Web3 = require('web3');
 
 const stakingUrls = {
@@ -31,7 +32,7 @@ const Rpcs = {
 }
 
 
-export async function getAmount(address: string) {
+export async function getAmount(address: string, userRequest=false) {
     const prices = (await request("GET", "https://supply.cerby.fi/cerby/supply-marketcap")).data;
     let staking = {};
     let liquid = {};
@@ -67,7 +68,7 @@ export async function getAmount(address: string) {
     let liquidPromises = Object.keys(Rpcs).map(async (rpc) => {
         for(let attempt = 0; attempt <= 5; attempt++) {
             try {
-                const balance: number = await Rpcs[rpc].methods.balanceOf(address).call();
+                const balance: number = await addQueue(rpc, Rpcs[rpc].methods.balanceOf(address).call, userRequest);
 
                 liquid[rpc] = {
                     liquid: balance / 1e18,

@@ -87,6 +87,7 @@ export async function userBalanceCheck(user: number | User, allGroups?: {[key: n
             const verdict = chatValidator(allGroups[chat], amountBalance);
             if(!verdict.allowed) {
                 if(attempt < 5) {
+                    await new Promise((r) => setTimeout(r, 20000))
                     await userBalanceCheck(user, allGroups, ++attempt);
                 } else {
                     user.joinedGroups.splice(chatIndex, 1);

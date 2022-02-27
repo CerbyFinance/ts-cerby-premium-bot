@@ -37,11 +37,14 @@ export async function getAmount(address: string, userRequest=false) {
     let staking = {};
     let liquid = {};
     let stakingPromises = Object.keys(stakingUrls).map(async (stakingSymbol) => {
-        while(true) {
+        let latestError;
+        for(let z = 0; z < 15; z++) {
             let tempReceived = await request("POST", stakingUrls[stakingSymbol], { query: getStakedAmountQuery(address) });
             if(tempReceived['errors']) {
                 console.error(tempReceived.errors);
-                return;
+                latestError = tempReceived.errors;
+                await new Promise((r) => setTimeout(r, 3000));
+                continue;
             }
             if(tempReceived.data.user != null) {
                 staking[stakingSymbol] = {
@@ -64,6 +67,7 @@ export async function getAmount(address: string, userRequest=false) {
                 continue;
             }
         }
+        throw `There have already been 15 attempts to get the stake balance. Chain: ${stakingSymbol}, user: ${address}. Error: ${JSON.stringify(latestError)}`;
     });
     let liquidPromises = Object.keys(Rpcs).map(async (rpc) => {
         for(let attempt = 0; attempt <= 5; attempt++) {
